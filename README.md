@@ -1,8 +1,40 @@
+### HtmlAgilityPack使用学习，爬取文章、美女图片、小说...
+
 # HtmlAgilityPack？
 
 HtmlAgilityPack 是 .NET 下的一个 HTML 解析类库。支持用 XPath 来解析 HTML 。命名空间： HtmlAgilityPack
 
-# HtmlAgilityPackDemo核心程序代码
+# 爬取美女图片核心代码
+
+```
+    static void Main(string[] args)
+    {
+        HtmlWeb web = new HtmlWeb();
+        string path = @"F:\pic\";
+        
+        for (int i = 88; i >= 1; i--)
+        {
+            var url = "http://jandan.net/ooxx/page-" + i;
+
+            HtmlDocument doc = web.Load(url);
+
+            List<HtmlNode> nodeList = doc.DocumentNode.SelectNodes("//*[@class=\"commentlist\"]/li").AsParallel().ToList();
+
+            foreach (var item in nodeList)
+            {
+                HtmlNode imghtml = item.SelectSingleNode(".//img");
+                var imgsrc = "http:" + imghtml.Attributes["src"].Value;
+                var imgname = Guid.NewGuid().ToString() + imgsrc.Substring(imgsrc.Length - 4, 4);
+
+                Console.WriteLine(imgsrc);
+
+                DownPic(imgsrc, path + imgname);
+            }
+        }
+    }
+```
+
+# 爬取每日一文核心代码
 
 ```
     var url = "https://meiriyiwen.com/random/";
@@ -19,7 +51,7 @@ HtmlAgilityPack 是 .NET 下的一个 HTML 解析类库。支持用 XPath 来解
     var article = node.SelectSingleNode("//*[@class=\"article_text\"]").InnerText.TrimStart();
 ```
 
-# Novel核心程序代码
+# 爬取小说核心代码
 
 ```
     static void Main(string[] args)
